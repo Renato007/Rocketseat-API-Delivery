@@ -18,7 +18,7 @@ Projeto acadêmico promovido pela Rocketseat para aprendizagem de tecnológia na
 <br>
 
 <p align="center">
-  <img alt="Projeto Delivery" src="" width="100%">
+  <img alt="Projeto Delivery" src="https://github.com/Renato007/Rocketseat-API-Delivery" width="100%">
 </p>
 
 ## 🚀 Tecnologias
