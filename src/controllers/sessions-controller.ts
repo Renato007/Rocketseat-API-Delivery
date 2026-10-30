@@ -1,7 +1,9 @@
 import { AppError } from "@/utils/AppError";
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "@/database/prisma";
+import { authConfig } from "@/configs/auth";
 import { compare } from "bcrypt";
+import { sign } from "jsonwebtoken";
 import { z } from "zod";
 
 class SessionsController {
@@ -21,13 +23,20 @@ class SessionsController {
       throw new AppError("Invalid email or password", 401);
     }
 
+    const { secret, expiresIn } = authConfig.jwt;
+
+    const token = sign({ role: user.role ?? "customer"}, secret, {
+      subject: user.id,
+      expiresIn
+    })
+
     //Verifica se a senha é igual do banco  de dados
     const passwordMatched = await compare(password, user.password);
     if (!passwordMatched) {
       throw new AppError("Invalid email or password", 401);
     }
 
-    return response.json({ message: "ok" });
+    return response.json({ token });
   }
 }
 
