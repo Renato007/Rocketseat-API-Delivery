@@ -36,7 +36,10 @@ class SessionsController {
       throw new AppError("Invalid email or password", 401);
     }
 
-    return response.json({ token });
+    const { password: hashedPassword, ...userWithoutPassword} = user
+
+    return response.json({ token, user: userWithoutPassword });
+    // return response.json({ token, ...userWithoutPassword });
   }
 }
 
