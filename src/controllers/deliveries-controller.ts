@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "@/database/prisma";
 import { z } from "zod";
+import { json } from "stream/consumers";
 
 class DeliveriesController {
   async create(request: Request, response: Response) {
@@ -18,6 +19,17 @@ class DeliveriesController {
       },
     });
     return response.status(201).json();
+  }
+
+  async index(request: Request, response: Response) {
+    const deliveries = await prisma.delivery.findMany({
+      //para incluir na requisição o nome e email
+      include: {
+        user: { select: { name: true, email: true } },
+      },
+    });
+
+    return response.json(deliveries);
   }
 }
 
