@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { prisma } from "@/database/prisma";
 import { z } from "zod";
 import { AppError } from "@/utils/AppError";
 class DeliveryLogsController {
-  async create(request: Request, responde: Response) {
+  async create(request: Request, response: Response) {
     const bodySchema = z.object({
       delivery_id: z.string().uuid(),
       description: z.string(),
@@ -29,7 +29,7 @@ class DeliveryLogsController {
       },
     });
 
-    return responde.status(201).json();
+    return response.status(201).json();
   }
 
   async show(request: Request, response: Response) {
@@ -38,18 +38,19 @@ class DeliveryLogsController {
     });
 
     const { delivery_id } = paramsSchema.parse(request.params);
-    console.log(delivery_id);
-
     const delivery = await prisma.delivery.findUnique({
       where: { id: delivery_id },
+      include:{
+        user: true,
+        logs:true // partes{select:{description:true, id: true}}
+      }
     });
-    console.log(delivery);
 
     if (
       request.user?.role === "customer" &&
-      request.user.id === delivery?.userId
+      request.user.id !== delivery?.userId
     ) {
-      throw new AppError("The user can olny view their deliveries", 401);
+      throw new AppError("The user can only view their deliveries", 403);
     }
 
     return response.json(delivery);
