@@ -18,6 +18,10 @@ class DeliveryLogsController {
       throw new AppError("delivery not found", 404);
     }
 
+    if (delivery.status === "delivered") {
+      throw new AppError("this order has already been delivered ");
+    }
+
     if (delivery.status === "processing") {
       throw new AppError("change status to shipped");
     }
@@ -40,10 +44,10 @@ class DeliveryLogsController {
     const { delivery_id } = paramsSchema.parse(request.params);
     const delivery = await prisma.delivery.findUnique({
       where: { id: delivery_id },
-      include:{
+      include: {
         user: true,
-        logs:true // partes{select:{description:true, id: true}}
-      }
+        logs: true, // partes{select:{description:true, id: true}}
+      },
     });
 
     if (
