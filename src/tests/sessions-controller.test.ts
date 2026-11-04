@@ -1,12 +1,15 @@
 import request from "supertest";
 import { describe, it, expect, afterAll } from "@jest/globals";
 import { app } from "@/app";
-import { before } from "node:test";
 import { prisma } from "@/database/prisma";
-import exp from "node:constants";
+
 
 describe("SessionsController", () => {
   let user_id: string;
+
+  afterAll(async () => {
+    await prisma.user.delete({ where: { id: user_id } });
+  });
 
   it("should authenticate a and get access token", async () => {
     const userResponse = await request(app).post("/users").send({
@@ -22,7 +25,7 @@ describe("SessionsController", () => {
       password: "password123",
     });
 
-    expect(sessionResponse.status).toBe(200)
-    expect(sessionResponse.body.token).toEqual(expect.any(String))
+    expect(sessionResponse.status).toBe(200);
+    expect(sessionResponse.body.token).toEqual(expect.any(String));
   });
 });
